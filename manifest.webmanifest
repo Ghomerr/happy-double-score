@@ -1,0 +1,17 @@
+{
+  "name": "Happy Double – Feuille de score",
+  "short_name": "Happy Double",
+  "description": "Feuille de score Happy Double avec calcul automatique des points.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#262426",
+  "theme_color": "#363336",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

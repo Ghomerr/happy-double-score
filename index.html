@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Happy Double – Feuille de score</title>
+  <meta name="description" content="Feuille de score Happy Double : saisie des manches, calcul automatique des points, plusieurs joueurs.">
+  <meta name="theme-color" content="#363336">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Kalam:wght@700&display=swap">
+  <link rel="stylesheet" href="app.css">
+  <style id="page-style"></style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="icons/icon-192.png" alt="" width="36" height="36">
+      <div>Happy Double<small>Feuille de score</small></div>
+    </div>
+    <nav class="actions" aria-label="Actions">
+      <button type="button" class="btn primary" id="btn-scores" data-icon="trophy"><span class="lbl">Scores</span></button>
+      <a class="btn" id="btn-rules" href="regles.pdf" target="_blank" rel="noopener" data-icon="book" aria-label="Règles du jeu (PDF)"><span class="lbl">Règles</span></a>
+      <button type="button" class="btn" id="btn-print" data-icon="printer"><span class="lbl">Imprimer</span></button>
+      <button type="button" class="btn" id="btn-menu" data-icon="menu" aria-label="Menu"></button>
+    </nav>
+  </header>
+
+  <div class="players" id="players" role="tablist" aria-label="Joueurs"></div>
+
+  <main>
+    <div class="sheet-scroll">
+      <div class="sheet" id="sheet">
+        <img class="sheet-bg" src="assets/sheet.svg" alt="Feuille de score Happy Double">
+        <div class="overlay" id="overlay"></div>
+      </div>
+    </div>
+    <p class="summary" id="summary"></p>
+  </main>
+
+  <section class="keypad" id="keypad" hidden aria-label="Saisie">
+    <div class="kp-inner">
+      <div class="kp-head">
+        <div class="kp-player">
+          <button type="button" class="kp-nav" data-act="prev-player" data-icon="chevron-left" aria-label="Joueur précédent"></button>
+          <strong id="kp-player"></strong>
+          <button type="button" class="kp-nav" data-act="next-player" data-icon="chevron-right" aria-label="Joueur suivant"></button>
+        </div>
+        <span class="kp-where" id="kp-where"></span>
+        <button type="button" class="kp-nav" data-act="close" data-icon="x" aria-label="Fermer le clavier"></button>
+      </div>
+      <p class="kp-hint" id="kp-hint" hidden></p>
+      <div class="kp-nums" id="kp-nums"></div>
+      <div class="kp-actions">
+        <button type="button" class="act" data-act="double"><b>D</b><span>Double</span></button>
+        <button type="button" class="act" data-act="paren"><b>)</b><span>Filet</span></button>
+        <button type="button" class="act danger" data-act="elim"><b>✕</b><span>Ligne nulle</span></button>
+        <button type="button" class="act" data-act="x2"><b>×2</b><span>Quitte ou double</span></button>
+        <button type="button" class="act next" data-act="next"><b>→</b><span>Suivant</span></button>
+      </div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast" role="status" hidden>
+    <span id="toast-msg"></span>
+    <button type="button" class="btn small" id="toast-action" hidden></button>
+  </div>
+
+  <dialog id="dlg-scores" aria-labelledby="scores-title">
+    <div class="dlg-head">
+      <h2 id="scores-title">Scores</h2>
+      <button type="button" class="kp-nav" data-close data-icon="x" aria-label="Fermer"></button>
+    </div>
+    <div class="dlg-body">
+      <p class="status" id="scores-status"></p>
+      <div class="table-wrap"><table class="scores" id="scores-table"></table></div>
+      <p class="fine">Touchez un joueur pour afficher sa feuille. En cas d'égalité, la personne avec le moins d'éliminations l'emporte.</p>
+    </div>
+  </dialog>
+
+  <dialog id="dlg-print" aria-labelledby="print-title">
+    <div class="dlg-head">
+      <h2 id="print-title">Imprimer des feuilles vierges</h2>
+      <button type="button" class="kp-nav" data-close data-icon="x" aria-label="Fermer"></button>
+    </div>
+    <div class="dlg-body">
+      <div class="choices">
+        <label class="choice"><input type="radio" name="layout" value="8" checked>
+          <span><b>8 feuilles par page</b>A4 portrait, 2 × 4, environ 70 % de la taille réelle</span></label>
+        <label class="choice"><input type="radio" name="layout" value="4">
+          <span><b>4 feuilles par page</b>A4 paysage, 2 × 2, taille réelle (13,5 × 9,5 cm)</span></label>
+      </div>
+      <p class="fine">Six feuilles ne tiennent pas mieux sur un A4 que huit : la mise en page à 8 garde la même taille de grille. Activez « Graphiques d'arrière-plan » dans la boîte d'impression si le fond n'apparaît pas.</p>
+      <div class="dlg-foot"><button type="button" class="btn primary" id="btn-do-print" data-icon="printer"><span class="lbl-keep">Imprimer</span></button></div>
+    </div>
+  </dialog>
+
+  <dialog id="dlg-menu" aria-labelledby="menu-title">
+    <div class="dlg-head">
+      <h2 id="menu-title">Menu</h2>
+      <button type="button" class="kp-nav" data-close data-icon="x" aria-label="Fermer"></button>
+    </div>
+    <div class="dlg-body menu">
+      <button type="button" class="menu-item" id="m-new"><b>Nouvelle partie</b><span>Garde les joueurs, remet les scores à zéro</span></button>
+      <button type="button" class="menu-item" id="m-del-player"><b id="m-del-label">Supprimer ce joueur</b><span>Retire sa feuille de la partie</span></button>
+      <button type="button" class="menu-item danger" id="m-reset"><b>Tout réinitialiser</b><span>Efface les scores et les joueurs</span></button>
+      <button type="button" class="menu-item" id="m-help"><b>Aide à la saisie</b><span>Doubles, filet, ligne nulle, raccourcis clavier</span></button>
+      <button type="button" class="menu-item" id="m-install" hidden><b>Installer l'application</b><span>Ajouter Happy Double à l'écran d'accueil</span></button>
+    </div>
+  </dialog>
+
+  <dialog id="dlg-help" aria-labelledby="help-title">
+    <div class="dlg-head">
+      <h2 id="help-title">Aide à la saisie</h2>
+      <button type="button" class="kp-nav" data-close data-icon="x" aria-label="Fermer"></button>
+    </div>
+    <div class="dlg-body help">
+      <ul>
+        <li><b>Touchez une case</b> pour la remplir avec le clavier en bas d'écran (2 à 12). La saisie passe ensuite à la case suivante.</li>
+        <li><b>D (double)</b> : la case devient un double ; saisissez ensuite les points rapportés par la carte Action (0 si aucun). Les doubles ne provoquent jamais d'élimination.</li>
+        <li><b>) (filet de sécurité)</b> : place la parenthèse derrière la dernière valeur de la ligne. Si la ligne devient nulle, tout ce qui est avant la parenthèse est conservé.</li>
+        <li><b>✕ Ligne nulle</b> : vous êtes éliminé, la manche vaut 0 point (sauf filet). Une valeur notée deux fois est signalée en rouge.</li>
+        <li><b>×2</b> : carte Quitte ou double, les points de la manche sont doublés si vous n'êtes pas éliminé.</li>
+        <li>Le <b>bonus de la zone de risque</b> (+5 à +20) est ajouté automatiquement selon la dernière case atteinte.</li>
+        <li><b>Jokers</b> : touchez une case joker pour la cocher. Les deux cases bonus vierges alternent entre « ) », « ) » coché, « 2 » et « 2 » coché.</li>
+        <li><b>Plusieurs joueurs</b> : ajoutez-les avec « + Joueur » et passez de l'un à l'autre avec les onglets ou les flèches du clavier de saisie (on reste sur la même manche).</li>
+        <li><b>Clavier physique</b> : chiffres, <kbd>D</kbd>, <kbd>)</kbd>, <kbd>X</kbd> (ligne nulle), <kbd>Entrée</kbd> / <kbd>Tab</kbd> (suivant), flèches, <kbd>Retour arrière</kbd>, <kbd>Échap</kbd>.</li>
+        <li>La partie en cours est enregistrée automatiquement sur cet appareil.</li>
+      </ul>
+    </div>
+  </dialog>
+
+  <div id="print-area" aria-hidden="true"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
