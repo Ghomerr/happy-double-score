@@ -111,6 +111,7 @@
       <button type="button" class="menu-item" id="m-del-player"><b id="m-del-label">Supprimer ce joueur</b><span>Retire sa feuille de la partie</span></button>
       <button type="button" class="menu-item danger" id="m-reset"><b>Tout réinitialiser</b><span>Efface les scores et les joueurs</span></button>
       <button type="button" class="menu-item" id="m-help"><b>Aide à la saisie</b><span>Doubles, filet, ligne nulle, raccourcis clavier</span></button>
+      <button type="button" class="menu-item with-icon" id="m-share" data-icon="qr"><div class="mi-text"><b>Partager l'application</b><span>QR code et lien vers la version en ligne</span></div></button>
       <button type="button" class="menu-item" id="m-install" hidden><b>Installer l'application</b><span>Ajouter Happy Double à l'écran d'accueil</span></button>
     </div>
   </dialog>
@@ -133,6 +134,22 @@
         <li><b>Clavier physique</b> : chiffres, <kbd>D</kbd>, <kbd>)</kbd>, <kbd>X</kbd> (ligne nulle), <kbd>Entrée</kbd> / <kbd>Tab</kbd> (suivant), flèches, <kbd>Retour arrière</kbd>, <kbd>Échap</kbd>.</li>
         <li>La partie en cours est enregistrée automatiquement sur cet appareil.</li>
       </ul>
+    </div>
+  </dialog>
+
+  <dialog id="dlg-share" aria-labelledby="share-title">
+    <div class="dlg-head">
+      <h2 id="share-title">Partager l'application</h2>
+      <button type="button" class="kp-nav" data-close data-icon="x" aria-label="Fermer"></button>
+    </div>
+    <div class="dlg-body share">
+      <img class="qr" src="assets/qr.svg" alt="QR code vers https://ghomerr.github.io/happy-double-score/" width="240" height="240">
+      <p>Scannez ce code pour ouvrir la feuille de score sur un autre appareil.</p>
+      <a class="share-url" id="share-url" href="https://ghomerr.github.io/happy-double-score/" target="_blank" rel="noopener">ghomerr.github.io/happy-double-score</a>
+      <div class="dlg-foot">
+        <button type="button" class="btn" id="btn-share-native" data-icon="share" hidden><span>Partager</span></button>
+        <button type="button" class="btn primary" id="btn-copy-link" data-icon="copy"><span id="copy-label">Copier le lien</span></button>
+      </div>
     </div>
   </dialog>
 

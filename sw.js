@@ -1,6 +1,6 @@
 // Service worker : met l'application en cache pour un usage hors ligne.
 // Pensez à incrémenter VERSION à chaque modification des fichiers.
-const VERSION = 'happy-double-v2';
+const VERSION = 'happy-double-v3';
 const ASSETS = [
   './',
   'index.html',
@@ -8,6 +8,7 @@ const ASSETS = [
   'app.js',
   'manifest.webmanifest',
   'assets/sheet.svg',
+  'assets/qr.svg',
   'regles.pdf',
   'icons/icon-192.png',
   'icons/icon-512.png',

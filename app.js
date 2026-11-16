@@ -32,12 +32,16 @@
   ];
 
   const STORE_KEY = 'happy-double/partie-en-cours';
+  const APP_URL = 'https://ghomerr.github.io/happy-double-score/';
 
   /* ---------- Icônes ---------- */
   const ICONS = {
     trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
     printer: '<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/>',
     book: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+    qr: '<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/>',
+    share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/>',
+    copy: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
     menu: '<path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>',
     plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
     x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
@@ -744,6 +748,36 @@
   $('#m-del-player').addEventListener('click', fromMenu(deletePlayer));
   $('#m-reset').addEventListener('click', fromMenu(resetAll));
   $('#m-help').addEventListener('click', fromMenu(() => $('#dlg-help').showModal()));
+  $('#m-share').addEventListener('click', fromMenu(() => {
+    $('#btn-share-native').hidden = !navigator.share;
+    $('#copy-label').textContent = 'Copier le lien';
+    $('#dlg-share').showModal();
+  }));
+
+  $('#btn-share-native').addEventListener('click', () => {
+    navigator.share({ title: 'Happy Double – Feuille de score', url: APP_URL }).catch(() => {});
+  });
+
+  let copiedTimer = 0;
+  $('#btn-copy-link').addEventListener('click', async () => {
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(APP_URL);
+      ok = true;
+    } catch (e) {
+      // Repli pour les contextes non sécurisés (fichier local, http).
+      const t = make('textarea');
+      t.value = APP_URL;
+      t.style.cssText = 'position:fixed;opacity:0';
+      $('#dlg-share').append(t);
+      t.select();
+      try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+      t.remove();
+    }
+    $('#copy-label').textContent = ok ? 'Lien copié ✓' : 'Copie impossible';
+    clearTimeout(copiedTimer);
+    copiedTimer = setTimeout(() => { $('#copy-label').textContent = 'Copier le lien'; }, 2200);
+  });
   $('#m-install').addEventListener('click', fromMenu(async () => {
     if (!installPrompt) return;
     installPrompt.prompt();
